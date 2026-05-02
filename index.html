@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบตรวจจับใบหน้า</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .box {
+            background: #16213e;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        button {
+            background: #0f3460;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1rem;
+            margin: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #e94560;
+        }
+        #previewContainer {
+            position: relative;
+            display: inline-block;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #resultMessage {
+            color: #f0a500;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>🔍 ตรวจจับใบหน้าบนมือถือ</h2>
+    <p>ระบบนี้ใช้ AI ตรวจจับใบหน้าจากรูปที่คุณเลือก</p>
+    
+    <div class="box">
+        <p><strong>1. เลือกรูปที่มีใบหน้าคน</strong></p>
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <button id="detectBtn">เริ่มตรวจจับ</button>
+        <div id="previewContainer">
+            <img id="preview" alt="preview">
+            <canvas id="overlay"></canvas>
+        </div>
+        <div id="resultMessage"></div>
+    </div>
+
+    <!-- โหลด face-api.js จาก CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+        let modelsLoaded = false;
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const overlay = document.getElementById('overlay');
+        const detectBtn = document.getElementById('detectBtn');
+        const resultMsg = document.getElementById('resultMessage');
+
+        // โหลดโมเดลเมื่อกดปุ่ม (เฉพาะครั้งแรก)
+        async function loadModels() {
+            if (modelsLoaded) return;
+            resultMsg.innerText = "⏳ กำลังโหลดโมเดล AI...";
+            const modelPath = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+            await faceapi.nets.ssdMobilenetv1.loadFromUri(modelPath);
+            await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
+            await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
+            modelsLoaded = true;
+            resultMsg.innerText = "✅ โมเดลพร้อมทำงาน";
+        }
+
+        // แสดงตัวอย่างรูปเมื่อเลือกไฟล์
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                preview.src = ev.target.result;
+                preview.style.display = 'block';
+                // ล้าง canvas และข้อความเก่า
+                overlay.width = 0;
+                resultMsg.innerText = '';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ตรวจจับใบหน้าและวาดกรอบ
+        detectBtn.addEventListener('click', async () => {
+            if (!imageInput.files[0]) {
+                alert('กรุณาเลือกรูปก่อน');
+                return;
+            }
+            resultMsg.innerText = "🔎 กำลังตรวจจับ...";
+            
+            try {
+                await loadModels();
+                
+                // สร้าง image element จากไฟล์ที่เลือก
+                const img = await faceapi.bufferToImage(imageInput.files[0]);
+                
+                // ตรวจจับใบหน้า (ใช้ SSD MobileNet เหมาะกับมือถือ)
+                const detections = await faceapi.detectAllFaces(img)
+                    .withFaceLandmarks();
+                
+                // แสดงผลลัพธ์
+                if (detections.length === 0) {
+                    resultMsg.innerText = "❌ ไม่พบใบหน้าในรูปนี้";
+                    overlay.width = 0;
+                    return;
+                }
+                
+                resultMsg.innerText = `🎉 พบ ${detections.length} ใบหน้า`;
+                
+                // ปรับขนาด canvas ให้ตรงกับรูปที่แสดง
+                const displaySize = { width: preview.width, height: preview.height };
+                faceapi.matchDimensions(overlay, displaySize);
+                
+                // ปรับพิกัด detection ให้ตรงกับขนาดแสดงผล
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                
+                // วาดกรอบและจุด landmarks ลงบน canvas
+                faceapi.draw.drawDetections(overlay, resizedDetections);
+                faceapi.draw.drawFaceLandmarks(overlay, resizedDetections);
+                
+            } catch (err) {
+                console.error(err);
+                resultMsg.innerText = "⚠️ เกิดข้อผิดพลาด: " + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
