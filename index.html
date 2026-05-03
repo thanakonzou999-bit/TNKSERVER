@@ -3,155 +3,1812 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ทดสอบตรวจจับใบหน้า</title>
+    <title>TNK OFFICIAL</title>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
+    </script>
     <style>
-        body {
-            background: #1a1a2e;
-            color: #eee;
-            font-family: 'Segoe UI', sans-serif;
-            text-align: center;
-            padding: 20px;
+        :root {
+            --gold: #c99c30;
+            --gold-light: #e0c060;
+            --cream: #fef9e7;
+            --cream-dark: #f5ecd7;
+            --white: #ffffff;
+            --black: #1a1a1a;
+            --gray: #6b7280;
+            --gray-light: #e5e7eb;
+            --red: #dc2626;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .box {
-            background: #16213e;
+
+        body {
+            font-family: 'Segoe UI', 'Prompt', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(160deg, #fef9e7 0%, #fdf3d0 30%, #fef9e7 60%, #faf5e4 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--black);
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4b860;
             border-radius: 20px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        button {
-            background: #0f3460;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 1rem;
-            margin: 5px;
+
+        /* HEADER */
+        .header {
+            background: var(--white);
+            border-bottom: 2px solid #e8d89e;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .logo-area {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
             cursor: pointer;
-            transition: 0.3s;
+            user-select: none;
         }
-        button:hover {
-            background: #e94560;
+        .logo-tnk {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #b8860b;
+            background: linear-gradient(180deg, #d4a830 0%, #b07d1a 50%, #c99c30 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Georgia', serif;
         }
-        #previewContainer {
-            position: relative;
-            display: inline-block;
+        .logo-official {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
-        #preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 15px;
-            margin: 15px 0;
-            display: none;
+        .header-btns {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        canvas {
-            position: absolute;
+        .btn {
+            padding: 10px 18px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #c99c30, #b8860b);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #d4a830, #c99c30);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(184, 134, 11, 0.4);
+        }
+        .btn-outline {
+            background: var(--white);
+            color: #b8860b;
+            border: 2px solid #c99c30;
+        }
+        .btn-outline:hover {
+            background: #fef9e7;
+            border-color: #b8860b;
+            transform: translateY(-2px);
+        }
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
+        .btn-green {
+            background: #16a34a;
+            color: #fff;
+        }
+        .btn-green:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+        .btn-gray {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .btn-gray:hover {
+            background: #d1d5db;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        /* EVENT CARDS */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .event-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid #f0e8d0;
+        }
+        .event-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: #c99c30;
+        }
+        .event-card-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f5ecd7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c99c30;
+            font-size: 3rem;
+        }
+        .event-card-body {
+            padding: 16px;
+        }
+        .event-card-body h3 {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            color: #1a1a1a;
+        }
+        .event-card-body .event-date {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .event-card-body .event-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: #4b5563;
+            margin-top: 8px;
+        }
+        .event-card-body .event-stats span {
+            background: #fef9e7;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .event-desc-preview {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            position: fixed;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.25s ease;
         }
-        #resultMessage {
-            color: #f0a500;
-            margin-top: 10px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            max-width: 500px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #b8860b;
+            font-size: 1.5rem;
+        }
+        .modal .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            background: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .modal .close-btn:hover {
+            background: #f3f4f6;
+            color: #1a1a1a;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            font-family: inherit;
+            background: #fafafa;
+        }
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #c99c30;
+            box-shadow: 0 0 0 3px rgba(201, 156, 48, 0.1);
+            background: #fff;
+        }
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* DASHBOARD TABS */
+        .dashboard-tabs {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0;
+        }
+        .dashboard-tab {
+            padding: 10px 18px;
+            cursor: pointer;
+            border-radius: 20px 20px 0 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            position: relative;
+            bottom: -2px;
+        }
+        .dashboard-tab.active {
+            color: #b8860b;
+            background: #fff;
+            border: 2px solid #e5e7eb;
+            border-bottom: 2px solid #fff;
+        }
+        .dashboard-tab:hover {
+            color: #b8860b;
+        }
+
+        /* EVENT MANAGEMENT */
+        .my-events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .my-event-item {
+            background: #fff;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            flex-wrap: wrap;
+            border: 1px solid #f0e8d0;
+            transition: var(--transition);
+        }
+        .my-event-item:hover {
+            border-color: #c99c30;
+        }
+        .my-event-cover-sm {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f5ecd7;
+            flex-shrink: 0;
+        }
+        .my-event-info {
+            flex: 1;
+            min-width: 150px;
+        }
+        .my-event-info h4 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        .my-event-info .meta {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        .my-event-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* FACE SEARCH PAGE */
+        .face-search-area {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .upload-big-btn {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 40px 50px;
+            border: 3px dashed #c99c30;
+            border-radius: 20px;
+            cursor: pointer;
+            background: #fffef9;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #b8860b;
+        }
+        .upload-big-btn:hover {
+            background: #fef9e7;
+            border-color: #b8860b;
+            transform: scale(1.02);
+        }
+        .upload-big-btn .icon-search {
+            font-size: 3rem;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .result-card {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            background: #fff;
+        }
+        .result-card:hover {
+            transform: scale(1.03);
+            box-shadow: var(--shadow-lg);
+        }
+        .result-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+        }
+        .result-card .match-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #16a34a;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .result-card .download-individual {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .result-card .download-individual:hover {
+            background: #c99c30;
+            transform: scale(1.1);
+        }
+
+        /* NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            z-index: 999;
+            font-weight: 500;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        .toast.success {
+            background: #16a34a;
+        }
+        .toast.error {
+            background: #dc2626;
+        }
+
+        /* HIDDEN */
+        .hidden {
+            display: none !important;
+        }
+
+        /* LOADING */
+        .loading-spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #c99c30;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .processing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        .progress-bar {
+            width: 280px;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c99c30, #e0c060);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .logo-tnk {
+                font-size: 1.6rem;
+            }
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+            .events-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            .event-card-cover {
+                height: 140px;
+            }
+            .my-event-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .my-event-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .upload-big-btn {
+                padding: 25px 30px;
+                font-size: 0.9rem;
+            }
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
         }
     </style>
 </head>
 <body>
-    <h2>🔍 ตรวจจับใบหน้าบนมือถือ</h2>
-    <p>ระบบนี้ใช้ AI ตรวจจับใบหน้าจากรูปที่คุณเลือก</p>
-    
-    <div class="box">
-        <p><strong>1. เลือกรูปที่มีใบหน้าคน</strong></p>
-        <input type="file" id="imageInput" accept="image/*">
-        <br>
-        <button id="detectBtn">เริ่มตรวจจับ</button>
-        <div id="previewContainer">
-            <img id="preview" alt="preview">
-            <canvas id="overlay"></canvas>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo-area" onclick="goToHome()">
+            <span class="logo-tnk">TNK</span>
+            <span class="logo-official">OFFICIAL</span>
         </div>
-        <div id="resultMessage"></div>
+        <div class="header-btns" id="headerBtns">
+            <!-- dynamic -->
+        </div>
     </div>
 
-    <!-- โหลด face-api.js จาก CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-    <script>
-        let modelsLoaded = false;
-        const imageInput = document.getElementById('imageInput');
-        const preview = document.getElementById('preview');
-        const overlay = document.getElementById('overlay');
-        const detectBtn = document.getElementById('detectBtn');
-        const resultMsg = document.getElementById('resultMessage');
+    <!-- MAIN CONTENT -->
+    <div class="container" id="mainContent"></div>
 
-        // โหลดโมเดลเมื่อกดปุ่ม (เฉพาะครั้งแรก)
-        async function loadModels() {
-            if (modelsLoaded) return;
-            resultMsg.innerText = "⏳ กำลังโหลดโมเดล AI...";
-            const modelPath = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-            await faceapi.nets.ssdMobilenetv1.loadFromUri(modelPath);
-            await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
-            await faceapi.nets.faceRecognitionNet.loadFromUri(modelPath);
-            modelsLoaded = true;
-            resultMsg.innerText = "✅ โมเดลพร้อมทำงาน";
+    <!-- PROCESSING OVERLAY -->
+    <div class="processing-overlay hidden" id="processingOverlay">
+        <div class="loading-spinner" style="width:50px;height:50px;"></div>
+        <p id="processingText" style="font-weight:600;color:#b8860b;">กำลังประมวลผล...</p>
+        <div class="progress-bar"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // ==================== DATABASE (IndexedDB) ====================
+        const DB_NAME = 'TNKDatabase';
+        const DB_VERSION = 3;
+        let db;
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('events')) {
+                        db.createObjectStore('events', { keyPath: 'id' });
+                    }
+                    if (!db.objectStoreNames.contains('photos')) {
+                        const store = db.createObjectStore('photos', { keyPath: 'id' });
+                        store.createIndex('eventId', 'eventId', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('faceDescriptors')) {
+                        const store = db.createObjectStore('faceDescriptors', { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('eventId', 'eventId', { unique: false });
+                        store.createIndex('photoId', 'photoId', { unique: false });
+                    }
+                };
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onerror = () => reject(request.error);
+            });
         }
 
-        // แสดงตัวอย่างรูปเมื่อเลือกไฟล์
-        imageInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                preview.src = ev.target.result;
-                preview.style.display = 'block';
-                // ล้าง canvas และข้อความเก่า
-                overlay.width = 0;
-                resultMsg.innerText = '';
-            };
-            reader.readAsDataURL(file);
-        });
+        function dbPut(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.put(data);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
 
-        // ตรวจจับใบหน้าและวาดกรอบ
-        detectBtn.addEventListener('click', async () => {
-            if (!imageInput.files[0]) {
-                alert('กรุณาเลือกรูปก่อน');
+        function dbGetAll(storeName) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbGet(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbDelete(storeName, id) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.delete(id);
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        function dbGetByIndex(storeName, indexName, value) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const index = store.index(indexName);
+                const request = index.getAll(value);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbClearStore(storeName) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.clear();
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        // ==================== LOCAL STORAGE HELPERS ====================
+        function lsGet(key, def = null) {
+            try { const v = localStorage.getItem('tnk_' + key); return v ? JSON.parse(v) : def; } catch (
+            e) { return def; }
+        }
+
+        function lsSet(key, val) {
+            try { localStorage.setItem('tnk_' + key, JSON.stringify(val)); } catch (e) {}
+        }
+
+        function lsRemove(key) {
+            try { localStorage.removeItem('tnk_' + key); } catch (e) {}
+        }
+
+        // ==================== APP STATE ====================
+        let currentUser = lsGet('currentUser', null);
+        let allUsers = lsGet('users', []);
+        let currentView = 'home'; // 'home' | 'eventDetail' | 'dashboard' | 'faceResults'
+        let currentEventId = null;
+        let faceAPILoaded = false;
+        let faceModelsLoading = false;
+        let faceModelsLoaded = false;
+
+        // Default super admin
+        function initDefaultUsers() {
+    // อ่านข้อมูลเดิมมา
+    let users = lsGet('users', []);
+    // ถ้าไม่มี admin ในระบบ ให้เพิ่มเข้าไปเสมอ (กันพลาด)
+    const adminExists = users.some(u => u.username === 'admin');
+    if (!adminExists) {
+        users.push({
+            id: 'admin_001',
+            username: 'admin',
+            password: 'admin123',
+            firstName: 'Super',
+            lastName: 'Admin',
+            email: 'admin@tnk.com',
+            role: 'superadmin',
+            profilePic: '',
+            approved: true,
+            createdAt: new Date().toISOString()
+        });
+        // บันทึกกลับลง localStorage
+        lsSet('users', users);
+    }
+    // อัปเดตตัวแปร allUsers ให้ตรงกับข้อมูลล่าสุดเสมอ
+    allUsers = users;
+}
+
+        function saveUsers() {
+            lsSet('users', allUsers);
+        }
+
+        function findUserByUsername(username) {
+            return allUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+        }
+
+        function findUserById(id) {
+            return allUsers.find(u => u.id === id);
+        }
+
+        // ==================== FACE API ====================
+        async function loadFaceAPIModels() {
+            if (faceModelsLoaded) return true;
+            if (faceModelsLoading) {
+                // wait
+                let waited = 0;
+                while (faceModelsLoading && waited < 30000) {
+                    await new Promise(r => setTimeout(r, 500));
+                    waited += 500;
+                    if (faceModelsLoaded) return true;
+                }
+                return faceModelsLoaded;
+            }
+            faceModelsLoading = true;
+            try {
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+                faceModelsLoaded = true;
+                faceAPILoaded = true;
+                console.log('✅ Face-API models loaded');
+                return true;
+            } catch (e) {
+                console.warn('⚠️ Face-API model load failed, trying alternate URL...', e.message);
+                try {
+                    const ALT_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/';
+                    await faceapi.nets.tinyFaceDetector.loadFromUri(ALT_URL);
+                    await faceapi.nets.faceLandmark68Net.loadFromUri(ALT_URL);
+                    await faceapi.nets.faceRecognitionNet.loadFromUri(ALT_URL);
+                    faceModelsLoaded = true;
+                    faceAPILoaded = true;
+                    console.log('✅ Face-API models loaded from alternate');
+                    return true;
+                } catch (e2) {
+                    console.error('❌ Face-API completely failed:', e2.message);
+                    faceModelsLoaded = false;
+                    faceAPILoaded = false;
+                    return false;
+                }
+            } finally {
+                faceModelsLoading = false;
+            }
+        }
+
+        async function ensureFaceAPI() {
+            if (faceModelsLoaded) return true;
+            if (typeof faceapi === 'undefined') {
+                console.warn('Face-api.js not loaded from CDN');
+                return false;
+            }
+            return await loadFaceAPIModels();
+        }
+
+        async function detectFacesInImage(dataUrl) {
+            if (!await ensureFaceAPI()) return [];
+            try {
+                const img = await faceapi.bufferToImage(await (await fetch(dataUrl)).blob());
+                const detections = await faceapi.detectAllFaces(img, new faceapi.TinyFaceDetector({
+                    inputSize: 320,
+                    scoreThreshold: 0.4
+                })).withFaceLandmarks().withFaceDescriptors();
+                return detections.map(d => ({
+                    descriptor: Array.from(d.descriptor),
+                    box: {
+                        x: d.detection.box.x,
+                        y: d.detection.box.y,
+                        width: d.detection.box.width,
+                        height: d.detection.box.height
+                    },
+                    score: d.detection.score
+                }));
+            } catch (e) {
+                console.error('Face detection error:', e);
+                return [];
+            }
+        }
+
+        function compareDescriptors(desc1, desc2) {
+            if (!desc1 || !desc2 || desc1.length !== desc2.length) return 1.0;
+            let sum = 0;
+            for (let i = 0; i < desc1.length; i++) {
+                sum += Math.pow(desc1[i] - desc2[i], 2);
+            }
+            return Math.sqrt(sum);
+        }
+
+        function distanceToPercent(distance) {
+            // 0 distance = 100%, distance 0.6 = ~40%, distance 1.2+ = ~0%
+            const pct = Math.max(0, Math.min(100, Math.round((1 - distance / 1.2) * 100)));
+            return pct;
+        }
+
+        // ==================== PHOTO STORAGE ====================
+        async function storePhoto(eventId, dataUrl, faceDescriptors) {
+            const id = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+            const photoData = {
+                id,
+                eventId,
+                dataUrl,
+                faceCount: faceDescriptors.length,
+                processed: true,
+                createdAt: new Date().toISOString()
+            };
+            await dbPut('photos', photoData);
+            // Store face descriptors
+            for (const desc of faceDescriptors) {
+                await dbPut('faceDescriptors', {
+                    eventId,
+                    photoId: id,
+                    descriptor: desc.descriptor,
+                    box: desc.box,
+                    score: desc.score
+                });
+            }
+            return photoData;
+        }
+
+        async function getEventPhotos(eventId) {
+            return await dbGetByIndex('photos', 'eventId', eventId);
+        }
+
+        async function getEventFaceDescriptors(eventId) {
+            return await dbGetByIndex('faceDescriptors', 'eventId', eventId);
+        }
+
+        async function deletePhoto(photoId) {
+            // Delete photo and its face descriptors
+            await dbDelete('photos', photoId);
+            const descriptors = await dbGetByIndex('faceDescriptors', 'photoId', photoId);
+            for (const d of descriptors) {
+                await dbDelete('faceDescriptors', d.id);
+            }
+        }
+
+        async function getEventPhotoCount(eventId) {
+            const photos = await dbGetByIndex('photos', 'eventId', eventId);
+            return photos.length;
+        }
+
+        async function getEventFaceCount(eventId) {
+            const descriptors = await dbGetByIndex('faceDescriptors', 'eventId', eventId);
+            return descriptors.length;
+        }
+
+        // ==================== EVENT MANAGEMENT ====================
+        async function getEvents() {
+            return await dbGetAll('events');
+        }
+
+        async function getEventById(id) {
+            return await dbGet('events', id);
+        }
+
+        async function createEvent(name, date, description, coverImageDataUrl) {
+            const id = 'event_' + Date.now();
+            const eventData = {
+                id,
+                name,
+                date,
+                description,
+                coverImage: coverImageDataUrl || '',
+                photoCount: 0,
+                faceCount: 0,
+                visible: true,
+                createdBy: currentUser ? currentUser.id : 'unknown',
+                createdAt: new Date().toISOString()
+            };
+            await dbPut('events', eventData);
+            return eventData;
+        }
+
+        async function updateEvent(id, updates) {
+            const event = await dbGet('events', id);
+            if (!event) return null;
+            const updated = { ...event, ...updates };
+            await dbPut('events', updated);
+            return updated;
+        }
+
+        async function deleteEvent(id) {
+            // Delete all photos and descriptors for this event
+            const photos = await dbGetByIndex('photos', 'eventId', id);
+            for (const p of photos) {
+                await deletePhoto(p.id);
+            }
+            await dbDelete('events', id);
+        }
+
+        async function refreshEventStats(eventId) {
+            const photoCount = await getEventPhotoCount(eventId);
+            const faceCount = await getEventFaceCount(eventId);
+            await updateEvent(eventId, { photoCount, faceCount });
+        }
+
+        // ==================== UI RENDERING ====================
+        function renderHeader() {
+            const btns = document.getElementById('headerBtns');
+            if (currentUser) {
+                btns.innerHTML = `
+                    <span style="font-weight:600;color:#b8860b;font-size:0.9rem;">👤 ${currentUser.firstName || currentUser.username} (${currentUser.role === 'superadmin' ? 'ซูเปอร์แอดมิน' : 'แอดมิน'})</span>
+                    <button class="btn btn-gold btn-sm" onclick="goToDashboard()">⚙️ จัดการหลังบ้าน</button>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">ออกจากระบบ</button>
+                `;
+            } else {
+                btns.innerHTML = `
+                    <button class="btn btn-outline btn-sm" onclick="showLoginModal()">🔑 เข้าสู่ระบบ</button>
+                    <button class="btn btn-gold btn-sm" onclick="showRegisterModal()">📝 สมัครสมาชิก</button>
+                `;
+            }
+        }
+
+        function goToHome() {
+            currentView = 'home';
+            currentEventId = null;
+            renderHome();
+        }
+
+        async function renderHome() {
+            currentView = 'home';
+            currentEventId = null;
+            renderHeader();
+            const container = document.getElementById('mainContent');
+            const events = await getEvents();
+            const visibleEvents = events.filter(e => e.visible !== false);
+            // Sort by date descending
+            visibleEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let eventsHTML = '';
+            if (visibleEvents.length === 0) {
+                eventsHTML = `
+                    <div style="text-align:center;padding:60px 20px;color:#6b7280;">
+                        <div style="font-size:4rem;margin-bottom:16px;">📷</div>
+                        <h3 style="color:#b8860b;">ยังไม่มีอีเวนต์ที่เปิดให้ชม</h3>
+                        <p>รอติดตามอีเวนต์ใหม่ ๆ ได้เร็ว ๆ นี้</p>
+                    </div>`;
+            } else {
+                eventsHTML = '<div class="events-grid">';
+                for (const event of visibleEvents) {
+                    const coverHTML = event.coverImage ?
+                        `<img src="${event.coverImage}" alt="cover" class="event-card-cover" style="object-fit:cover;">` :
+                        `<div class="event-card-cover">📷</div>`;
+                    eventsHTML += `
+                        <div class="event-card" onclick="viewEvent('${event.id}')">
+                            ${coverHTML}
+                            <div class="event-card-body">
+                                <h3>${escapeHTML(event.name)}</h3>
+                                <div class="event-date">📅 ${formatDate(event.date)}</div>
+                                <div class="event-desc-preview">${escapeHTML(event.description || '')}</div>
+                                <div class="event-stats">
+                                    <span>🖼️ ${event.photoCount || 0} รูป</span>
+                                    <span>👤 ${event.faceCount || 0} ใบหน้า</span>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                eventsHTML += '</div>';
+            }
+
+            container.innerHTML = `
+                <div style="text-align:center;padding:20px 0 10px;">
+                    <h1 style="color:#b8860b;font-size:2rem;margin-bottom:4px;">TNK OFFICIAL</h1>
+                    <p style="color:#6b7280;">ค้นหาภาพของคุณในทุกอีเวนต์ด้วย AI ใบหน้า</p>
+                </div>
+                ${eventsHTML}
+            `;
+        }
+
+        async function viewEvent(eventId) {
+            currentView = 'eventDetail';
+            currentEventId = eventId;
+            renderHeader();
+            const event = await getEventById(eventId);
+            if (!event) {
+                showToast('ไม่พบอีเวนต์นี้', 'error');
+                goToHome();
                 return;
             }
-            resultMsg.innerText = "🔎 กำลังตรวจจับ...";
-            
+            const container = document.getElementById('mainContent');
+            container.innerHTML = `
+                <div style="margin-bottom:16px;">
+                    <button class="btn btn-outline btn-sm" onclick="goToHome()">⬅ กลับสู่หน้าหลัก</button>
+                </div>
+                <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.06);text-align:center;">
+                    ${event.coverImage ? `<img src="${event.coverImage}" alt="cover" style="width:100%;max-height:300px;object-fit:cover;border-radius:12px;margin-bottom:16px;">` : ''}
+                    <h2 style="color:#b8860b;">${escapeHTML(event.name)}</h2>
+                    <p style="color:#6b7280;">📅 ${formatDate(event.date)}</p>
+                    <p style="color:#4b5563;margin:8px 0;">${escapeHTML(event.description || '')}</p>
+                    <div style="display:flex;gap:20px;justify-content:center;margin:16px 0;">
+                        <span style="background:#fef9e7;padding:8px 16px;border-radius:20px;font-weight:600;">🖼️ ${event.photoCount || 0} รูป</span>
+                        <span style="background:#fef9e7;padding:8px 16px;border-radius:20px;font-weight:600;">👤 ${event.faceCount || 0} ใบหน้า</span>
+                    </div>
+                    <div class="face-search-area">
+                        <label for="faceSearchInput" class="upload-big-btn">
+                            <span class="icon-search">🔍</span>
+                            <span>อัพโหลดรูปของคุณ</span>
+                            <span style="font-size:0.8rem;color:#6b7280;">เพื่อค้นหาทุกภาพของคุณในงานนี้</span>
+                        </label>
+                        <input type="file" id="faceSearchInput" accept="image/*" style="display:none;" onchange="handleFaceSearch(event)">
+                    </div>
+                    <div id="searchResults"></div>
+                </div>
+            `;
+        }
+
+        async function handleFaceSearch(e) {
+            const file = e.target.files[0];
+            if (!file || !currentEventId) return;
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML =
+                '<div style="text-align:center;padding:20px;"><div class="loading-spinner"></div><p>กำลังค้นหาใบหน้าของคุณ...</p></div>';
+
+            const faceReady = await ensureFaceAPI();
+            if (!faceReady) {
+                resultsDiv.innerHTML =
+                    '<p style="color:#dc2626;text-align:center;">⚠️ ระบบ AI ใบหน้ากำลังโหลดโมเดล กรุณาลองใหม่อีกครั้งในภายหลัง หรือตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</p>';
+                return;
+            }
+
             try {
-                await loadModels();
-                
-                // สร้าง image element จากไฟล์ที่เลือก
-                const img = await faceapi.bufferToImage(imageInput.files[0]);
-                
-                // ตรวจจับใบหน้า (ใช้ SSD MobileNet เหมาะกับมือถือ)
-                const detections = await faceapi.detectAllFaces(img)
-                    .withFaceLandmarks();
-                
-                // แสดงผลลัพธ์
-                if (detections.length === 0) {
-                    resultMsg.innerText = "❌ ไม่พบใบหน้าในรูปนี้";
-                    overlay.width = 0;
+                const userDataUrl = await fileToDataUrl(file);
+                const userFaces = await detectFacesInImage(userDataUrl);
+
+                if (userFaces.length === 0) {
+                    resultsDiv.innerHTML =
+                    '<p style="color:#dc2626;text-align:center;">⚠️ ไม่พบใบหน้าในรูปที่อัพโหลด กรุณาลองรูปอื่นที่มีใบหน้าชัดเจน</p>';
                     return;
                 }
-                
-                resultMsg.innerText = `🎉 พบ ${detections.length} ใบหน้า`;
-                
-                // ปรับขนาด canvas ให้ตรงกับรูปที่แสดง
-                const displaySize = { width: preview.width, height: preview.height };
-                faceapi.matchDimensions(overlay, displaySize);
-                
-                // ปรับพิกัด detection ให้ตรงกับขนาดแสดงผล
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                
-                // วาดกรอบและจุด landmarks ลงบน canvas
-                faceapi.draw.drawDetections(overlay, resizedDetections);
-                faceapi.draw.drawFaceLandmarks(overlay, resizedDetections);
-                
+
+                const userDescriptor = userFaces[0].descriptor;
+                const allDescriptors = await getEventFaceDescriptors(currentEventId);
+
+                if (allDescriptors.length === 0) {
+                    resultsDiv.innerHTML =
+                        '<p style="color:#6b7280;text-align:center;">ยังไม่มีข้อมูลใบหน้าในอีเวนต์นี้</p>';
+                    return;
+                }
+
+                // Compare against all stored descriptors
+                const photoMatches = {}; // photoId -> {maxPercent, bestDistance}
+                for (const fd of allDescriptors) {
+                    const distance = compareDescriptors(userDescriptor, fd.descriptor);
+                    const percent = distanceToPercent(distance);
+                    if (percent >= 35) {
+                        if (!photoMatches[fd.photoId] || percent > photoMatches[fd.photoId].maxPercent) {
+                            photoMatches[fd.photoId] = { maxPercent: percent, bestDistance: distance };
+                        }
+                    }
+                }
+
+                const matchedPhotoIds = Object.keys(photoMatches);
+                if (matchedPhotoIds.length === 0) {
+                    resultsDiv.innerHTML =
+                        '<p style="color:#6b7280;text-align:center;">😔 ไม่พบรูปที่ตรงกับใบหน้าของคุณในอีเวนต์นี้ (ความคล้ายต้องมากกว่า 35%)</p>';
+                    return;
+                }
+
+                // Sort by percent descending
+                matchedPhotoIds.sort((a, b) => photoMatches[b].maxPercent - photoMatches[a].maxPercent);
+
+                // Get photo data
+                const allPhotos = await getEventPhotos(currentEventId);
+                const photoMap = {};
+                for (const p of allPhotos) photoMap[p.id] = p;
+
+                let resultsHTML =
+                    `<p style="text-align:center;color:#16a34a;font-weight:600;margin-bottom:10px;">✅ พบ ${matchedPhotoIds.length} รูปที่ตรงกับใบหน้าของคุณ!</p>
+                    <button class="btn btn-gold btn-sm" onclick="downloadAllResults('${currentEventId}', ${JSON.stringify(matchedPhotoIds).replace(/"/g, '&quot;')})" style="margin-bottom:12px;">📥 ดาวน์โหลดทั้งหมด (${matchedPhotoIds.length} รูป)</button>
+                    <div class="results-grid">`;
+
+                for (const photoId of matchedPhotoIds) {
+                    const photo = photoMap[photoId];
+                    const percent = photoMatches[photoId].maxPercent;
+                    if (photo) {
+                        resultsHTML += `
+                            <div class="result-card">
+                                <img src="${photo.dataUrl}" alt="result">
+                                <span class="match-badge">${percent}%</span>
+                                <button class="download-individual" onclick="downloadSinglePhoto('${photo.id}')" title="ดาวน์โหลด">💾</button>
+                            </div>`;
+                    }
+                }
+                resultsHTML += '</div>';
+                resultsDiv.innerHTML = resultsHTML;
+
+                // Store for bulk download
+                resultsDiv.dataset.matchedPhotoIds = JSON.stringify(matchedPhotoIds);
+                resultsDiv.dataset.eventId = currentEventId;
+
             } catch (err) {
-                console.error(err);
-                resultMsg.innerText = "⚠️ เกิดข้อผิดพลาด: " + err.message;
+                console.error('Face search error:', err);
+                resultsDiv.innerHTML =
+                    '<p style="color:#dc2626;text-align:center;">⚠️ เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่</p>';
+            }
+        }
+
+        async function downloadAllResults(eventId, matchedPhotoIds) {
+            const photos = await getEventPhotos(eventId);
+            const photoMap = {};
+            for (const p of photos) photoMap[p.id] = p;
+
+            for (let i = 0; i < matchedPhotoIds.length; i++) {
+                const photo = photoMap[matchedPhotoIds[i]];
+                if (photo) {
+                    await downloadDataUrl(photo.dataUrl, `tnk_photo_${i + 1}.jpg`);
+                    // Small delay between downloads
+                    await new Promise(r => setTimeout(r, 200));
+                }
+            }
+            showToast(`ดาวน์โหลด ${matchedPhotoIds.length} รูปเรียบร้อย!`, 'success');
+        }
+
+        function downloadSinglePhoto(photoId) {
+            dbGet('photos', photoId).then(photo => {
+                if (photo) downloadDataUrl(photo.dataUrl, 'tnk_photo.jpg');
+            });
+        }
+
+        function downloadDataUrl(dataUrl, filename) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // ==================== DASHBOARD ====================
+        let dashboardTab = 'home-preview';
+
+        async function goToDashboard() {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            currentView = 'dashboard';
+            renderHeader();
+            dashboardTab = 'home-preview';
+            await renderDashboard();
+        }
+
+        async function renderDashboard() {
+            const container = document.getElementById('mainContent');
+            container.innerHTML = `
+                <h2 style="color:#b8860b;margin-bottom:4px;">⚙️ จัดการหลังบ้าน</h2>
+                <p style="color:#6b7280;margin-bottom:16px;">สวัสดี, ${currentUser.firstName || currentUser.username}</p>
+                <div class="dashboard-tabs">
+                    <button class="dashboard-tab ${dashboardTab === 'home-preview' ? 'active' : ''}" onclick="switchDashTab('home-preview')">🏠 หน้าหลัก</button>
+                    <button class="dashboard-tab ${dashboardTab === 'events' ? 'active' : ''}" onclick="switchDashTab('events')">📅 แดชบอร์ด</button>
+                    <button class="dashboard-tab ${dashboardTab === 'profile' ? 'active' : ''}" onclick="switchDashTab('profile')">👤 โปรไฟล์</button>
+                    <button class="dashboard-tab ${dashboardTab === 'members' ? 'active' : ''}" onclick="switchDashTab('members')">👥 สมาชิก</button>
+                </div>
+                <div id="dashContent"></div>
+            `;
+            await renderDashContent();
+        }
+
+        async function switchDashTab(tab) {
+            dashboardTab = tab;
+            // Update tab styles
+            document.querySelectorAll('.dashboard-tab').forEach(t => t.classList.remove('active'));
+            const tabs = document.querySelectorAll('.dashboard-tab');
+            const tabNames = ['home-preview', 'events', 'profile', 'members'];
+            const idx = tabNames.indexOf(tab);
+            if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+            await renderDashContent();
+        }
+
+        async function renderDashContent() {
+            const dashContent = document.getElementById('dashContent');
+            if (!dashContent) return;
+
+            switch (dashboardTab) {
+                case 'home-preview':
+                    const events = await getEvents();
+                    const visibleEvents = events.filter(e => e.visible !== false);
+                    visibleEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    let previewHTML =
+                        '<p style="color:#6b7280;margin-bottom:12px;">👁️ นี่คือหน้าตาที่คนทั่วไปจะเห็น (แสดงเฉพาะอีเวนต์ที่เปิดการแสดงผล)</p>';
+                    if (visibleEvents.length === 0) {
+                        previewHTML +=
+                            '<p style="text-align:center;padding:40px;color:#6b7280;">ยังไม่มีอีเวนต์ที่เปิดแสดง</p>';
+                    } else {
+                        previewHTML += '<div class="events-grid">';
+                        for (const event of visibleEvents) {
+                            const coverHTML = event.coverImage ?
+                                `<img src="${event.coverImage}" alt="cover" class="event-card-cover" style="object-fit:cover;">` :
+                                `<div class="event-card-cover">📷</div>`;
+                            previewHTML += `
+                                <div class="event-card">
+                                    ${coverHTML}
+                                    <div class="event-card-body">
+                                        <h3>${escapeHTML(event.name)}</h3>
+                                        <div class="event-date">📅 ${formatDate(event.date)}</div>
+                                        <div class="event-desc-preview">${escapeHTML(event.description || '')}</div>
+                                        <div class="event-stats">
+                                            <span>🖼️ ${event.photoCount || 0} รูป</span>
+                                            <span>👤 ${event.faceCount || 0} ใบหน้า</span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        }
+                        previewHTML += '</div>';
+                    }
+                    dashContent.innerHTML = previewHTML;
+                    break;
+
+                case 'events':
+                    await renderEventsTab();
+                    break;
+
+                case 'profile':
+                    renderProfileTab();
+                    break;
+
+                case 'members':
+                    await renderMembersTab();
+                    break;
+            }
+        }
+
+        async function renderEventsTab() {
+            const dashContent = document.getElementById('dashContent');
+            const events = await getEvents();
+            // Sort by date desc
+            events.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            let html = `
+                <button class="btn btn-gold" onclick="showCreateEventModal()" style="margin-bottom:16px;">➕ สร้างอีเวนต์ใหม่</button>
+                <h3 style="margin-bottom:10px;">📅 อีเวนต์ของฉัน (${events.length})</h3>
+                <div class="my-events-list">`;
+
+            if (events.length === 0) {
+                html += '<p style="color:#6b7280;text-align:center;padding:30px;">ยังไม่มีอีเวนต์ สร้างอีเวนต์แรกของคุณเลย!</p>';
+            } else {
+                for (const event of events) {
+                    const coverHTML = event.coverImage ?
+                        `<img src="${event.coverImage}" class="my-event-cover-sm" alt="cover">` :
+                        `<div class="my-event-cover-sm" style="display:flex;align-items:center;justify-content:center;font-size:2rem;">📷</div>`;
+                    html += `
+                        <div class="my-event-item">
+                            ${coverHTML}
+                            <div class="my-event-info">
+                                <h4>${escapeHTML(event.name)} ${event.visible ? '🟢' : '🔒'}</h4>
+                                <div class="meta">📅 ${formatDate(event.date)} | 🖼️ ${event.photoCount || 0} รูป | 👤 ${event.faceCount || 0} ใบหน้า</div>
+                                <div class="meta" style="font-size:0.75rem;">${escapeHTML((event.description || '').substring(0, 60))}${(event.description || '').length > 60 ? '...' : ''}</div>
+                            </div>
+                            <div class="my-event-actions">
+                                <button class="btn btn-gold btn-sm" onclick="uploadPhotosToEvent('${event.id}')">📤 อัพโหลดรูป</button>
+                                <button class="btn btn-outline btn-sm" onclick="viewEventPhotos('${event.id}')">🖼️ ดูรูป</button>
+                                <button class="btn btn-outline btn-sm" onclick="editEventPhotos('${event.id}')">✏️ แก้ไข</button>
+                                <button class="btn btn-sm ${event.visible ? 'btn-green' : 'btn-gray'}" onclick="toggleEventVisibility('${event.id}')">${event.visible ? '👁️ แสดง' : '🙈 ซ่อน'}</button>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDeleteEvent('${event.id}')">🗑️ ลบ</button>
+                            </div>
+                        </div>`;
+                }
+            }
+            html += '</div>';
+            dashContent.innerHTML = html;
+        }
+
+        function renderProfileTab() {
+            const dashContent = document.getElementById('dashContent');
+            const user = currentUser;
+            if (!user) return;
+            dashContent.innerHTML = `
+                <div style="max-width:500px;background:#fff;padding:24px;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+                    <div style="text-align:center;margin-bottom:20px;">
+                        ${user.profilePic ? `<img src="${user.profilePic}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">` : '<div style="width:80px;height:80px;border-radius:50%;background:#f5ecd7;display:inline-flex;align-items:center;justify-content:center;font-size:2.5rem;">👤</div>'}
+                    </div>
+                    <div class="input-group"><label>User ID</label><input value="${user.id}" readonly style="background:#f5f5f5;"></div>
+                    <div class="input-group"><label>ชื่อผู้ใช้</label><input value="${user.username}" readonly style="background:#f5f5f5;"></div>
+                    <div class="input-group"><label>ชื่อ</label><input value="${user.firstName || ''}" readonly style="background:#f5f5f5;"></div>
+                    <div class="input-group"><label>นามสกุล</label><input value="${user.lastName || ''}" readonly style="background:#f5f5f5;"></div>
+                    <div class="input-group"><label>อีเมล</label><input value="${user.email || ''}" readonly style="background:#f5f5f5;"></div>
+                    <div class="input-group"><label>ระดับแอดมิน</label><input value="${user.role === 'superadmin' ? 'ซูเปอร์แอดมิน' : 'แอดมิน'}" readonly style="background:#f5f5f5;"></div>
+                </div>`;
+        }
+
+        async function renderMembersTab() {
+            const dashContent = document.getElementById('dashContent');
+            if (currentUser.role !== 'superadmin') {
+                dashContent.innerHTML =
+                    '<p style="color:#dc2626;">⚠️ เฉพาะซูเปอร์แอดมินเท่านั้นที่สามารถจัดการสมาชิกได้</p>';
+                return;
+            }
+            const pendingMembers = allUsers.filter(u => !u.approved && u.id !== 'admin_001');
+            const approvedMembers = allUsers.filter(u => u.approved);
+
+            let html = `
+                <h3 style="margin-bottom:10px;">⏳ สมาชิกที่รออนุมัติ (${pendingMembers.length})</h3>`;
+            if (pendingMembers.length === 0) {
+                html += '<p style="color:#6b7280;">ไม่มีสมาชิกที่รออนุมัติ</p>';
+            } else {
+                for (const m of pendingMembers) {
+                    html += `
+                        <div style="background:#fff;padding:12px 16px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+                            <div>
+                                <strong>${escapeHTML(m.username)}</strong> - ${escapeHTML(m.firstName || '')} ${escapeHTML(m.lastName || '')} | ${escapeHTML(m.email || '')}
+                                <span style="color:#6b7280;font-size:0.8rem;">(${m.role === 'superadmin' ? 'ซูเปอร์แอดมิน' : 'แอดมิน'})</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button class="btn btn-green btn-sm" onclick="approveMember('${m.id}')">✅ อนุมัติ</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}')">🗑️ ลบ</button>
+                            </div>
+                        </div>`;
+                }
+            }
+
+            html += `<h3 style="margin-top:20px;margin-bottom:10px;">👥 สมาชิกทั้งหมด (${approvedMembers.length})</h3>`;
+            if (approvedMembers.length === 0) {
+                html += '<p style="color:#6b7280;">ไม่มีสมาชิก</p>';
+            } else {
+                for (const m of approvedMembers) {
+                    html += `
+                        <div style="background:#fff;padding:12px 16px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+                            <div>
+                                <strong>${escapeHTML(m.username)}</strong> - ${escapeHTML(m.firstName || '')} ${escapeHTML(m.lastName || '')} | ${escapeHTML(m.email || '')}
+                                <span style="color:#6b7280;font-size:0.8rem;">(${m.role === 'superadmin' ? 'ซูเปอร์แอดมิน' : 'แอดมิน'})</span>
+                            </div>
+                            ${m.id !== 'admin_001' ? `<button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}')">🗑️ ลบ</button>` : '<span style="color:#b8860b;">👑 หลัก</span>'}
+                        </div>`;
+                }
+            }
+            dashContent.innerHTML = html;
+        }
+
+        function approveMember(id) {
+            const user = findUserById(id);
+            if (user) {
+                user.approved = true;
+                saveUsers();
+                showToast('อนุมัติสมาชิกเรียบร้อย', 'success');
+                switchDashTab('members');
+            }
+        }
+        // ==================== EVENT ACTIONS ====================
+        function showCreateEventModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = 'createEventModal';
+            overlay.innerHTML = `
+                <div class="modal" style="max-width:550px;">
+                    <button class="close-btn" onclick="closeModal('createEventModal')">✕</button>
+                    <h2>สร้างอีเวนต์ใหม่</h2>
+                    <div class="input-group"><label>ชื่ออีเวนต์ *</label><input id="evName" placeholder="เช่น Wedding 2024"></div>
+                    <div class="input-group"><label>วันที่ *</label><input type="date" id="evDate"></div>
+                    <div class="input-group"><label>รายละเอียด</label><textarea id="evDesc" placeholder="รายละเอียดงาน..."></textarea></div>
+                    <div class="input-group"><label>รูปปกอีเวนต์</label><input type="file" id="evCover" accept="image/*"></div>
+                    <button class="btn btn-gold" onclick="createEventAction()" style="width:100%;">สร้างอีเวนต์</button>
+                </div>`;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal('createEventModal'); });
+        }
+
+        async function createEventAction() {
+            const name = document.getElementById('evName').value.trim();
+            const date = document.getElementById('evDate').value;
+            const desc = document.getElementById('evDesc').value.trim();
+            const coverFile = document.getElementById('evCover').files[0];
+
+            if (!name || !date) {
+                showToast('กรุณากรอกชื่อและวันที่', 'error');
+                return;
+            }
+
+            let coverDataUrl = '';
+            if (coverFile) {
+                coverDataUrl = await fileToDataUrl(coverFile);
+            }
+
+            const event = await createEvent(name, date, desc, coverDataUrl);
+            closeModal('createEventModal');
+            showToast('สร้างอีเวนต์เรียบร้อย!', 'success');
+            await renderEventsTab();
+        }
+
+        async function uploadPhotosToEvent(eventId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;
+            input.onchange = async () => {
+                const files = Array.from(input.files);
+                if (files.length === 0) return;
+
+                const overlay = document.getElementById('processingOverlay');
+                const progressFill = document.getElementById('progressFill');
+                const processingText = document.getElementById('processingText');
+                overlay.classList.remove('hidden');
+                progressFill.style.width = '0%';
+                processingText.textContent = 'กำลังอัพโหลดและวิเคราะห์ใบหน้า...';
+
+                let processed = 0;
+                const total = files.length;
+                const faceReady = await ensureFaceAPI();
+
+                for (const file of files) {
+                    try {
+                        const dataUrl = await fileToDataUrl(file);
+                        let faceDescriptors = [];
+                        if (faceReady) {
+                            faceDescriptors = await detectFacesInImage(dataUrl);
+                        }
+                        await storePhoto(eventId, dataUrl, faceDescriptors);
+                    } catch (err) {
+                        console.error('Error processing photo:', err);
+                    }
+                    processed++;
+                    const pct = Math.round((processed / total) * 100);
+                    progressFill.style.width = pct + '%';
+                    processingText.textContent =
+                        `กำลังอัพโหลดและวิเคราะห์ใบหน้า... (${processed}/${total})`;
+                }
+
+                await refreshEventStats(eventId);
+                overlay.classList.add('hidden');
+                showToast(`อัพโหลด ${processed} รูปเรียบร้อย! ตรวจพบใบหน้าทั้งหมด`, 'success');
+                await renderEventsTab();
+            };
+            input.click();
+        }
+
+        async function viewEventPhotos(eventId) {
+            const photos = await getEventPhotos(eventId);
+            const event = await getEventById(eventId);
+            const container = document.getElementById('mainContent');
+
+            let photosHTML = photos.map(p => `
+                <div style="position:relative;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <img src="${p.dataUrl}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+                    <span style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.7);color:#fff;padding:2px 8px;border-radius:10px;font-size:0.7rem;">👤 ${p.faceCount || 0}</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom:12px;">⬅ กลับแดชบอร์ด</button>
+                <h3>🖼️ รูปทั้งหมดใน "${escapeHTML(event?.name || '')}" (${photos.length} รูป)</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px;">${photosHTML || '<p>ไม่มีรูป</p>'}</div>
+            `;
+            currentView = 'dashboard';
+        }
+
+        async function editEventPhotos(eventId) {
+            const photos = await getEventPhotos(eventId);
+            const event = await getEventById(eventId);
+            const container = document.getElementById('mainContent');
+
+            let photosHTML = photos.map(p => `
+                <div style="position:relative;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    <img src="${p.dataUrl}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+                    <button onclick="deletePhotoAction('${p.id}', '${eventId}')" style="position:absolute;top:6px;right:6px;background:#dc2626;color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1rem;">🗑️</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <button class="btn btn-outline btn-sm" onclick="goToDashboard()" style="margin-bottom:12px;">⬅ กลับแดชบอร์ด</button>
+                <h3>✏️ แก้ไข/ลบรูป ใน "${escapeHTML(event?.name || '')}" (${photos.length} รูป)</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px;">${photosHTML || '<p>ไม่มีรูป</p>'}</div>
+            `;
+            currentView = 'dashboard';
+        }
+
+        async function deletePhotoAction(photoId, eventId) {
+            if (!confirm('คุณแน่ใจที่จะลบรูปนี้?')) return;
+            await deletePhoto(photoId);
+            await refreshEventStats(eventId);
+            showToast('ลบรูปเรียบร้อย', 'success');
+            await editEventPhotos(eventId);
+        }
+
+        async function toggleEventVisibility(eventId) {
+            const event = await getEventById(eventId);
+            if (!event) return;
+            await updateEvent(eventId, { visible: !event.visible });
+            showToast(event.visible ? 'ซ่อนอีเวนต์แล้ว (เห็นเฉพาะหลังบ้าน)' : 'แสดงอีเวนต์แล้ว (ทุกคนเห็น)',
+            'success');
+            await renderEventsTab();
+        }
+
+        async function confirmDeleteEvent(eventId) {
+            if (!confirm('คุณแน่ใจที่จะลบอีเวนต์นี้? การลบจะรวมรูปทั้งหมดในอีเวนต์นี้ด้วย!')) return;
+            await deleteEvent(eventId);
+            showToast('ลบอีเวนต์เรียบร้อย', 'success');
+            await renderEventsTab();
+        }
+
+        // ==================== AUTH ====================
+        function showLoginModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = 'loginModal';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <button class="close-btn" onclick="closeModal('loginModal')">✕</button>
+                    <h2>🔑 เข้าสู่ระบบ</h2>
+                    <div class="input-group"><label>ชื่อผู้ใช้</label><input id="loginUser" placeholder="Username"></div>
+                    <div class="input-group"><label>รหัสผ่าน</label><input type="password" id="loginPass" placeholder="Password"></div>
+                    <button class="btn btn-gold" onclick="loginAction()" style="width:100%;">เข้าสู่ระบบ</button>
+                    <p style="text-align:center;margin-top:12px;font-size:0.85rem;color:#6b7280;">ยังไม่มีบัญชี? <a href="#" onclick="closeModal('loginModal');showRegisterModal();" style="color:#b8860b;">สมัครสมาชิก</a></p>
+                </div>`;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal('loginModal'); });
+        }
+
+        function loginAction() {
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+            if (!username || !password) {
+                showToast('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน', 'error');
+                return;
+            }
+            const user = findUserByUsername(username);
+            if (!user) {
+                showToast('ไม่พบบัญชีผู้ใช้นี้', 'error');
+                return;
+            }
+            if (user.password !== password) {
+                showToast('รหัสผ่านไม่ถูกต้อง', 'error');
+                return;
+            }
+            if (!user.approved) {
+                showToast('บัญชีของคุณยังไม่ได้รับการอนุมัติจากซูเปอร์แอดมิน', 'error');
+                return;
+            }
+            currentUser = user;
+            lsSet('currentUser', currentUser);
+            closeModal('loginModal');
+            showToast('เข้าสู่ระบบสำเร็จ!', 'success');
+            renderHeader();
+            goToDashboard();
+        }
+
+        function showRegisterModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.id = 'registerModal';
+            overlay.innerHTML = `
+                <div class="modal" style="max-width:500px;">
+                    <button class="close-btn" onclick="closeModal('registerModal')">✕</button>
+                    <h2>📝 สมัครสมาชิก</h2>
+                    <div class="input-group"><label>ชื่อผู้ใช้ *</label><input id="regUser" placeholder="Username"></div>
+                    <div class="input-group"><label>รหัสผ่าน *</label><input type="password" id="regPass" placeholder="Password"></div>
+                    <div class="input-group"><label>ชื่อ</label><input id="regFirstName" placeholder="ชื่อ"></div>
+                    <div class="input-group"><label>นามสกุล</label><input id="regLastName" placeholder="นามสกุล"></div>
+                    <div class="input-group"><label>อีเมล</label><input type="email" id="regEmail" placeholder="email@example.com"></div>
+                    <div class="input-group"><label>รูปโปรไฟล์ (ไม่จำเป็น)</label><input type="file" id="regProfilePic" accept="image/*"></div>
+                    <button class="btn btn-gold" onclick="registerAction()" style="width:100%;">สมัครสมาชิก</button>
+                    <p style="text-align:center;margin-top:12px;font-size:0.85rem;color:#6b7280;">มีบัญชีแล้ว? <a href="#" onclick="closeModal('registerModal');showLoginModal();" style="color:#b8860b;">เข้าสู่ระบบ</a></p>
+                </div>`;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal('registerModal'); });
+        }
+
+        async function registerAction() {
+            const username = document.getElementById('regUser').value.trim();
+            const password = document.getElementById('regPass').value.trim();
+            const firstName = document.getElementById('regFirstName').value.trim();
+            const lastName = document.getElementById('regLastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const profilePicFile = document.getElementById('regProfilePic').files[0];
+
+            if (!username || !password) {
+                showToast('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน', 'error');
+                return;
+            }
+            if (findUserByUsername(username)) {
+                showToast('ชื่อผู้ใช้นี้มีคนใช้แล้ว', 'error');
+                return;
+            }
+
+            let profilePic = '';
+            if (profilePicFile) {
+                profilePic = await fileToDataUrl(profilePicFile);
+            }
+
+            const newUser = {
+                id: 'user_' + Date.now(),
+                username,
+                password,
+                firstName,
+                lastName,
+                email,
+                role: 'admin',
+                profilePic,
+                approved: false,
+                createdAt: new Date().toISOString()
+            };
+            allUsers.push(newUser);
+            saveUsers();
+            closeModal('registerModal');
+            showToast('สมัครสมาชิกเรียบร้อย! รอซูเปอร์แอดมินอนุมัติ', 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            lsRemove('currentUser');
+            renderHeader();
+            goToHome();
+            showToast('ออกจากระบบเรียบร้อย', 'success');
+        }
+
+        // ==================== UTILS ====================
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function fileToDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                // Resize large images for storage efficiency
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    const maxDim = 1200;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        const ratio = Math.min(maxDim / w, maxDim / h);
+                        w = Math.round(w * ratio);
+                        h = Math.round(h * ratio);
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.onerror = () => {
+                    // Fallback: read original
+                    reader.readAsDataURL(file);
+                };
+                img.src = url;
+            });
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            } catch (e) {
+                return dateStr;
+            }
+        }
+
+        function showToast(msg, type = '') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.4s';
+                setTimeout(() => toast.remove(), 400);
+            }, 2500);
+        }
+
+        // ==================== INIT ====================
+        async function init() {
+            initDefaultUsers();
+            await openDB();
+            // Restore session
+            const savedUser = lsGet('currentUser', null);
+            if (savedUser) {
+                // Verify user still exists
+                const found = findUserById(savedUser.id);
+                if (found && found.approved) {
+                    currentUser = found;
+                } else {
+                    currentUser = null;
+                    lsRemove('currentUser');
+                }
+            }
+            renderHeader();
+            await renderHome();
+
+            // Preload face-api models in background
+            setTimeout(async () => {
+                if (typeof faceapi !== 'undefined') {
+                    await loadFaceAPIModels();
+                }
+            }, 1000);
+        }
+
+        // Handle browser back button
+        window.addEventListener('popstate', () => {
+            if (currentView === 'dashboard') {
+                goToHome();
+            } else if (currentView === 'eventDetail') {
+                goToHome();
             }
         });
+
+        // Start the app
+        init().catch(err => {
+            console.error('Init error:', err);
+            document.getElementById('mainContent').innerHTML =
+                '<p style="text-align:center;padding:40px;color:#dc2626;">เกิดข้อผิดพลาดในการโหลดแอป กรุณารีเฟรชหน้า</p>';
+        });
+
+        console.log('🏆 TNK OFFICIAL - Ready');
+        console.log('📌 Default login: admin / admin123 (Super Admin)');
+        console.log('💡 ข้อมูลทั้งหมดเก็บใน IndexedDB และ localStorage ของเบราว์เซอร์');
     </script>
 </body>
 </html>
